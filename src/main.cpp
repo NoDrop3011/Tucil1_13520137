@@ -42,18 +42,16 @@ vector<Coordinate> realSolution;
 vector<vb> isVisited;
 double time_taken;
 char isRecursive;
-ll currBufferSz;
-
-char convertIntToChar(ll a){
-    if(a>=1 && a<=10) return (char)(a+47);
-    else return (char)(a+54); // Otherwise, 11-36
-}
+ll currBufferSz,counTokenUnique;
+vt tempTokenUnique;
+ll maxSequenceLength;
 
 void randomizeInputMat(ll row, ll col){
     for(ll i = 0; i<row; i++){
         for(ll j = 0; j<col; j++){
-            tempToken.first = convertIntToChar(rand()%37);
-            tempToken.second = convertIntToChar(rand()%37);
+            ll tempRanUniquePos = rand()%sz(tempTokenUnique);
+            tempToken.first = tempTokenUnique[tempRanUniquePos].first;
+            tempToken.second = tempTokenUnique[tempRanUniquePos].second;
             tempVec.emplace_back(tempToken);
         }
         matrix.emplace_back(tempVec);
@@ -63,7 +61,7 @@ void randomizeInputMat(ll row, ll col){
 
 void randomizeSequence(ll num){
     for(ll i = 0; i<num; i++){
-        ll length = rand()%(buffer_size) + 1;
+        ll length = rand()%(maxSequenceLength) + 1;
         ll currX = rand()%(matrix_width);
         ll currY = rand()%(matrix_height);
         tempToken.first = matrix[currY][currX].first;
@@ -219,11 +217,25 @@ void generateRandInput(){
     cout << "Enter number of sequences: ";
     cin >> num_sequences;
     cout << "\n";
+    cout << "Enter maximum sequence length: ";
+    cin >> maxSequenceLength;
+    cout << "\n";
+    cout << "Enter number of unique token: ";
+    cin >> counTokenUnique;
+    cout << "\n";
+    cout << "Enter unique token [Asumsi token berupa alpha numeric dengan huruf kapital] \n";
+    cout << "Command: ";
+    for(ll i = 0; i<counTokenUnique; i++){
+        cin >> tempToken.first >> tempToken.second;
+        tempTokenUnique.emplace_back(tempToken);
+    }
+    cout << "\n";
     
     srand(time(NULL));
     randomizeInputMat(matrix_height, matrix_width);
     initVisitChecker();
     randomizeSequence(num_sequences);
+    tempTokenUnique.clear();
 
     cout << "Random Input Generated: \n";
     printInput();
