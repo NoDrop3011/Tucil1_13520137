@@ -8,4 +8,4 @@
 6, 4
 5, 4
 
-Time Execution: 100.460000 ms
+Time Execution: 55.141000 ms

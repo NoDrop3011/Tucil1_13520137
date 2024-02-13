@@ -9,4 +9,4 @@ L8 QV 0N VC KH 07 50 31
 2, 8
 2, 6
 
-Time Execution: 13708.227000 ms
+Time Execution: 5778.179000 ms

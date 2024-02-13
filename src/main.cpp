@@ -35,7 +35,6 @@ vt tempVec;
 Token tempToken;
 ll tempVal;
 Coordinate tempCoord;
-ll countAllSolution;
 ll numInput;
 
 vector<Coordinate> candidateSolution;
@@ -43,6 +42,7 @@ vector<Coordinate> realSolution;
 vector<vb> isVisited;
 double time_taken;
 char isRecursive;
+ll currBufferSz;
 
 char convertIntToChar(ll a){
     if(a>=1 && a<=10) return (char)(a+47);
@@ -259,37 +259,34 @@ void inputData(){
 
 void checkSequences(){
     ll szCandidate = sz(candidateSolution);
-    for(ll max_lengthCandidate = 1; max_lengthCandidate<=szCandidate; max_lengthCandidate++){
-        ll countReward = 0;
-        for(ll i = 0; i<num_sequences; i++){
-            if(sequence_reward[i]<=0) continue; // Kalo value reward <= 0 langsung skip, percuma
-            ll szSeq = sz(sequence[i]);
-            if(max_lengthCandidate>=szSeq){
-                for(ll j = 0; j<max_lengthCandidate; j++){
-                    if(max_lengthCandidate-j>=szSeq){
-                        bool flag = true;
-                        for(ll k = 0; k<szSeq; k++){
-                            if(sequence[i][k].first!=matrix[candidateSolution[j+k].y][candidateSolution[j+k].x].first
-                            || sequence[i][k].second!=matrix[candidateSolution[j+k].y][candidateSolution[j+k].x].second
-                            ){
-                                flag = false;
-                                break;
-                            }
-                        }
-                        if(flag){
-                            countReward += sequence_reward[i];
+    ll countReward = 0;
+    for(ll i = 0; i<num_sequences; i++){
+        ll szSeq = sz(sequence[i]);
+        if(szCandidate>=szSeq){
+            for(ll j = 0; j<szCandidate; j++){
+                if(szCandidate-j>=szSeq){
+                    bool flag = true;
+                    for(ll k = 0; k<szSeq; k++){
+                        if(sequence[i][k].first!=matrix[candidateSolution[j+k].y][candidateSolution[j+k].x].first
+                        || sequence[i][k].second!=matrix[candidateSolution[j+k].y][candidateSolution[j+k].x].second
+                        ){
+                            flag = false;
                             break;
                         }
+                    }
+                    if(flag){
+                        countReward += sequence_reward[i];
+                        break;
                     }
                 }
             }
         }
-        if(countReward>max_reward){
-            max_reward = countReward;
-            realSolution.clear();
-            for(ll i = 0; i<max_lengthCandidate; i++){
-                realSolution.emplace_back(candidateSolution[i]);
-            }
+    }
+    if(countReward>max_reward){
+        max_reward = countReward;
+        realSolution.clear();
+        for(ll i = 0; i<szCandidate; i++){
+            realSolution.emplace_back(candidateSolution[i]);
         }
     }
 }
@@ -317,8 +314,7 @@ void searchBruteForce1(ll row,ll col){
         isVisited[tempPl1.pos.y][tempPl1.pos.x] = true;
         candidateSolution.emplace_back(tempCoord);
 
-        if(currLevel==buffer_size-1){
-            countAllSolution++;
+        if(currLevel==currBufferSz-1){
             checkSequences();
             continue;
         }
@@ -361,8 +357,7 @@ void searchBruteForce2Rec(ll level, ll row, ll col) {
     isVisited[row][col] = true;
     candidateSolution.emplace_back(tempCoord);
 
-    if(level==buffer_size-1){
-        countAllSolution++;
+    if(level==currBufferSz-1){
         checkSequences();
         return;
     }
@@ -401,7 +396,6 @@ void searchBruteForce2Rec(ll level, ll row, ll col) {
 void printSolution(){
     cout << "\n";
     cout << "Output:\n";
-    cout << "Banyak candidate solusi: " << countAllSolution << "\n";
     cout << "Possible Solution: " << "\n";
     cout << max_reward << "\n";
 
@@ -454,14 +448,24 @@ void printSolutionToTXT(string namaFile){
 void solve(){
     for(ll i = 0; i<matrix_width; i++){
         if(isRecursive=='Y'){
-            searchBruteForce2Rec(0,0,i);
+            for(ll j = 1; j<=buffer_size; j++){
+                currBufferSz = j;
+                searchBruteForce2Rec(0,0,i);
+                while(!candidateSolution.empty()){
+                    isVisited[candidateSolution.back().y][candidateSolution.back().x] = false;
+                    candidateSolution.pop_back();
+                }
+            }
         }
         else{
-            searchBruteForce1(0,i);
-        }
-        while(!candidateSolution.empty()){
-            isVisited[candidateSolution.back().y][candidateSolution.back().x] = false;
-            candidateSolution.pop_back();
+            for(ll j = 1; j<=buffer_size; j++){
+                currBufferSz = j;
+                searchBruteForce1(0,i);
+                while(!candidateSolution.empty()){
+                    isVisited[candidateSolution.back().y][candidateSolution.back().x] = false;
+                    candidateSolution.pop_back();
+                }
+            }
         }
     }
 }
