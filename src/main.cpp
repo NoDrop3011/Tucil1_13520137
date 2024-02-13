@@ -294,7 +294,7 @@ void checkSequences(){
             }
         }
     }
-    if(countReward>max_reward){
+    if(countReward>max_reward || (countReward==max_reward&&sz(realSolution)>szCandidate)){
         max_reward = countReward;
         realSolution.clear();
         for(ll i = 0; i<szCandidate; i++){
@@ -325,9 +325,8 @@ void searchBruteForce1(ll row,ll col){
         tempCoord.y = tempPl1.pos.y;
         isVisited[tempPl1.pos.y][tempPl1.pos.x] = true;
         candidateSolution.emplace_back(tempCoord);
-
+        checkSequences();
         if(currLevel==currBufferSz-1){
-            checkSequences();
             continue;
         }
 
@@ -368,9 +367,8 @@ void searchBruteForce2Rec(ll level, ll row, ll col) {
     tempCoord.y = row;
     isVisited[row][col] = true;
     candidateSolution.emplace_back(tempCoord);
-
+    checkSequences();
     if(level==currBufferSz-1){
-        checkSequences();
         return;
     }
 
@@ -459,25 +457,12 @@ void printSolutionToTXT(string namaFile){
 // Solve with brute force
 void solve(){
     for(ll i = 0; i<matrix_width; i++){
-        if(isRecursive=='Y'){
-            for(ll j = 1; j<=buffer_size; j++){
-                currBufferSz = j;
-                searchBruteForce2Rec(0,0,i);
-                while(!candidateSolution.empty()){
-                    isVisited[candidateSolution.back().y][candidateSolution.back().x] = false;
-                    candidateSolution.pop_back();
-                }
-            }
-        }
-        else{
-            for(ll j = 1; j<=buffer_size; j++){
-                currBufferSz = j;
-                searchBruteForce1(0,i);
-                while(!candidateSolution.empty()){
-                    isVisited[candidateSolution.back().y][candidateSolution.back().x] = false;
-                    candidateSolution.pop_back();
-                }
-            }
+        currBufferSz = buffer_size;
+        if(isRecursive=='Y') searchBruteForce2Rec(0,0,i);
+        else searchBruteForce1(0,i);
+        while(!candidateSolution.empty()){
+            isVisited[candidateSolution.back().y][candidateSolution.back().x] = false;
+            candidateSolution.pop_back();
         }
     }
 }
