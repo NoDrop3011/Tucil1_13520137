@@ -45,3 +45,5 @@ Setelah itu program berhasil dijalankan,
 1. Input lokasi file txt persoalan ketika program meminta input, beberapa data uji txt tersedia dalam folder test (input ../test/input/*namafile*) melalui interaksi command line
     jadi anda cukup memasukkan nama file tersebut saja dalam format .txt
 2. Program akan berjalan hingga menampilkan luaran berupa solusi permasalahan dan waktu eksekusi, serta anda bisa melakukan save pada terminal untuk solusi tersebut.
+
+## Artikel terkait: https://medium.com/@gilanglahat22/penyelesaian-cyberpunk-2077-breach-protocol-dengan-algoritma-brute-force-30acdb8b1f44
